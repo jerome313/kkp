@@ -65,7 +65,12 @@
           id: 1,
           name: 'Prayers',
           children: [
-            { id: 1, icon:'mdi-glass-wine', name: 'LDC' },
+            { id: 1, icon:'mdi-glass-wine', name: 'LDC',
+              children: [
+                          { id:1, icon:'mdi-candle', name:'Before Meal'},
+                          { id:2, icon:'mdi-apple', name:'After Meal'}
+                        ]
+            },
             { id: 2, icon:'mdi-chess-rook', name: 'Prayer for the year' },
             { id: 3, icon:'mdi-shield-cross-outline', name: 'Prayer for Protection' }
           ],
