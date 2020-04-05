@@ -5,22 +5,20 @@
       app
     >
       <v-list dense>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-home</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Home</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item link>
-          <v-list-item-action>
-            <v-icon>mdi-christianity-outline</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Prayers</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+
+        <v-treeview
+          :items="items"
+          hoverable
+          activatable
+          :open-on-click="true"
+        >
+          <template v-slot:prepend="{ item }">
+            <v-icon>
+              {{ item.icon }}
+            </v-icon>
+          </template>
+        </v-treeview>
+
       </v-list>
     </v-navigation-drawer>
 
@@ -62,6 +60,17 @@
     },
     data: () => ({
       drawer: null,
+      items: [
+        {
+          id: 1,
+          name: 'Prayers',
+          children: [
+            { id: 1, icon:'mdi-glass-wine', name: 'LDC' },
+            { id: 2, icon:'mdi-chess-rook', name: 'Prayer for the year' },
+            { id: 3, icon:'mdi-shield-cross-outline', name: 'Prayer for Protection' }
+          ],
+        }
+      ],
     }),
   }
 </script>
