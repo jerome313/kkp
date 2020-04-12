@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <PrayerContent/>
   </div>
@@ -12,4 +12,4 @@
       PrayerContent
     }
   }
-</script>
+</script> -->

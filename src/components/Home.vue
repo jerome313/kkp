@@ -11,6 +11,7 @@
           hoverable
           activatable
           :open-on-click="true"
+          @update:active="getPrayer"
         >
           <template v-slot:prepend="{ item }">
             <v-icon>
@@ -24,7 +25,7 @@
 
     <v-app-bar
       app
-      color="indigo"
+      v-bind:color="getColour()"
       dark
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
@@ -36,27 +37,43 @@
         class="fill-height"
         fluid
       >
-        <PrayerCard/>
+        <div v-if="info!=null && prayerId==0"><!-- Liturgical celebration. Only displayed in the beginnning -->
+          <p class="display-1 text--primary" v-for="cel in info.celebrations" :key="cel.title">
+            {{cel.title}}
+          </p>
+        </div>
+        <div v-if="info!=null && prayerId!=0"> <!-- Shows selected prayer -->
+          <PrayerContent :optionId="prayerId" :season="info.season"/>
+        </div>
       </v-container>
     </v-content>
     <v-footer
-      color="indigo"
+      v-bind:color="getColour()"
       app
     >
-      <span class="white--text">&copy; 2019</span>
+      <span class="white--text">&copy; 2020</span>
     </v-footer>
   </v-app>
 </template>
 
 <script>
-  import PrayerCard from "./PrayerCard"
+  import PrayerContent from "./PrayerContent"
+  import axios from 'axios'; //to make rest calls to the liturgical calendar api
   export default {
     name: "Home",
     components: {
-      PrayerCard
+      PrayerContent
     },
     props: {
       source: String,
+    },
+    mounted () { //loading liturgical info for the day
+      var d = new Date();
+      var dateString = d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
+      var requestString = 'http://calapi.inadiutorium.cz/api/v0/en/calendars/default/' + dateString;
+      axios
+      .get(requestString)
+      .then(response => (this.info = response.data))
     },
     data: () => ({
       drawer: null,
@@ -65,17 +82,39 @@
           id: 1,
           name: 'Prayers',
           children: [
-            { id: 1, icon:'mdi-glass-wine', name: 'LDC',
+            { id: 2, icon:'mdi-glass-wine', name: 'LDC',
               children: [
-                          { id:1, icon:'mdi-candle', name:'Before Meal'},
-                          { id:2, icon:'mdi-apple', name:'After Meal'}
+                          { id:3, icon:'mdi-candle', name:'Before Meal'},
+                          { id:4, icon:'mdi-apple', name:'After Meal'}
                         ]
             },
-            { id: 2, icon:'mdi-chess-rook', name: 'Prayer for the year' },
-            { id: 3, icon:'mdi-shield-cross-outline', name: 'Prayer for Protection' }
+            { id: 5, icon:'mdi-chess-rook', name: 'Prayer for the year' },
+            { id: 6, icon:'mdi-shield-cross-outline', name: 'Prayer for Protection' }
           ],
         }
       ],
+      info: null,
+      prayerId: 0
     }),
+    methods: { //gets liturgical colour to add into tags
+      getColour()
+      {
+        if(this.info== null){
+          return "indigo";
+        }
+        else {
+          if(this.info.celebrations[0].colour=="violet")
+          return "deep purple darken-4";
+        else if (this.info.celebrations[0].colour=="rose")
+          return "pink accent-1";
+        else
+          return this.info.celebrations[0].colour;
+        }
+      },
+      getPrayer: function(array) { //gets the prayer id from the treeview
+        console.log("prayer", array[0]);
+        this.prayerId=array[0];
+      }
+    }
   }
 </script>
