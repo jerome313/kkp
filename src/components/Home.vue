@@ -2,6 +2,7 @@
   <v-app id="inspire">
     <v-navigation-drawer
       v-model="drawer"
+      :dark ="colourDark"
       app
     >
       <v-list dense>
@@ -25,11 +26,11 @@
 
     <v-app-bar
       app
-      v-bind:color="getColour()"
-      light 
-    ><!--temporary change to light -->
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>KKP Prayer Guide</v-toolbar-title>
+      color="primary"
+      :dark ="!colourDark"
+    ><!--for when the liturgical color is white -->
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
+      <v-toolbar-title>Prayer Guide</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-show="(prayerId==3||prayerId==4)" text v-if="sat" @click="setSun()">SAT.</v-btn>
       <v-btn v-show="(prayerId==3||prayerId==4)" text v-else @click="setSat()">SUN.</v-btn>
@@ -51,10 +52,11 @@
       </v-container>
     </v-content>
     <v-footer
-      v-bind:color="getColour()"
+      v-bind:color="this.$vuetify.theme.themes.light.primary"
       app
     >
-      <span class="white--text">&copy; 2020</span>
+      <span v-if="!colourDark" class="white--text">&copy; 2020</span>
+      <span v-else >&copy; 2020</span>
     </v-footer>
   </v-app>
 </template>
@@ -77,7 +79,32 @@
       var requestString = 'http://calapi.inadiutorium.cz/api/v0/en/calendars/default/' + dateString;
       axios
       .get(requestString)
-      .then(response => (this.info = response.data));
+      .then(response => (this.info = response.data))
+      .catch(error => {
+        console.log(error);
+        this.errored = true;
+      })
+      .finally(() =>{
+          if(this.info.celebrations[0].colour=="violet") {
+            this.$vuetify.theme.themes.light.primary = '#5E35B1';
+            this.colourDark = false;
+          }
+          else if (this.info.celebrations[0].colour=="red"){
+            this.$vuetify.theme.themes.light.primary = '#B71C1C';
+            this.colourDark = false;
+          }
+          else if (this.info.celebrations[0].colour=="rose"){
+            this.$vuetify.theme.themes.light.primary = '#FF80AB';
+            this.colourDark = false;
+          }
+          else if (this.info.celebrations[0].colour=="white"){
+            this.$vuetify.theme.themes.light.primary = '#FFFFFF';
+            this.colourDark = true;
+          }
+          else {
+            this.$vuetify.theme.themes.light.primary = '#3F51B5';
+          }
+      });
     },
     data: () => ({
       drawer: null,
@@ -99,23 +126,10 @@
       ],
       info: null,
       prayerId: 0,
-      sat: true //variable that is true unless the day a Sunday. Saturday's prayer is the default prayer any day except for Sunday
+      sat: true, //variable that is true unless the day a Sunday. Saturday's prayer is the default prayer any day except for Sunday
+      colourDark: false
     }),
-    methods: { //gets liturgical colour to add into tags
-      getColour()
-      {
-        if(this.info== null){
-          return "indigo";
-        }
-        else {
-          if(this.info.celebrations[0].colour=="violet")
-          return "deep purple darken-4";
-        else if (this.info.celebrations[0].colour=="rose")
-          return "pink accent-1";
-        else
-          return this.info.celebrations[0].colour;
-        }
-      },
+    methods: { 
       getPrayer: function(array) { //gets the prayer id from the treeview
         console.log("prayer", array[0]);
         this.drawer=false; //hides the navigation drawer when a prayer is chosen
