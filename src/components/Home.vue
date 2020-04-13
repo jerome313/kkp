@@ -26,10 +26,13 @@
     <v-app-bar
       app
       v-bind:color="getColour()"
-      dark
-    >
+      light 
+    ><!--temporary change to light -->
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-toolbar-title>KKP Prayer Guide</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn v-show="(prayerId==3||prayerId==4)" text v-if="sat" @click="setSun()">SAT.</v-btn>
+      <v-btn v-show="(prayerId==3||prayerId==4)" text v-else @click="setSat()">SUN.</v-btn>
     </v-app-bar>
 
     <v-content>
@@ -43,7 +46,7 @@
           </p>
         </div>
         <div v-if="info!=null && prayerId!=0"> <!-- Shows selected prayer -->
-          <PrayerContent :optionId="prayerId" :season="info.season"/>
+          <PrayerContent :optionId="prayerId" :season="info.season" :day="sat"/>
         </div>
       </v-container>
     </v-content>
@@ -67,13 +70,14 @@
     props: {
       source: String,
     },
-    mounted () { //loading liturgical info for the day
+    mounted () { 
+      //loading liturgical info for the day
       var d = new Date();
       var dateString = d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
       var requestString = 'http://calapi.inadiutorium.cz/api/v0/en/calendars/default/' + dateString;
       axios
       .get(requestString)
-      .then(response => (this.info = response.data))
+      .then(response => (this.info = response.data));
     },
     data: () => ({
       drawer: null,
@@ -94,7 +98,8 @@
         }
       ],
       info: null,
-      prayerId: 0
+      prayerId: 0,
+      sat: true //variable that is true unless the day a Sunday. Saturday's prayer is the default prayer any day except for Sunday
     }),
     methods: { //gets liturgical colour to add into tags
       getColour()
@@ -113,7 +118,17 @@
       },
       getPrayer: function(array) { //gets the prayer id from the treeview
         console.log("prayer", array[0]);
+        this.drawer=false; //hides the navigation drawer when a prayer is chosen
+        if(this.info!=null) {
+          this.sat = !(this.info.weekday=="sunday")
+        }
         this.prayerId=array[0];
+      },
+      setSat() {
+        this.sat=true;
+      }, 
+      setSun() {
+        this.sat=false;
       }
     }
   }

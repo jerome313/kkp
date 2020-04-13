@@ -5,93 +5,126 @@
 </template>
 
 <script>
-import satBeforeLines from './info/LDCsat-before.json'
-import satAfterLines from './info/LDCsat-after.json'
-//import sunBeforeLines from './info/LDCsun-before.json'
-//import sunAfterLines from './info/LDCsun-after.json'
-import protectionLines from './info/protection.json'
+import satBeforeLines from "./info/LDCsat-before.json";
+import satAfterLines from "./info/LDCsat-after.json";
+import sunBeforeLines from './info/LDCsun-before.json'
+import sunAfterLines from './info/LDCsun-after.json'
+import protectionLines from "./info/protection.json";
 export default {
   name: "PrayerContent",
   props: {
     optionId: Number,
-    season:String
+    season: String,
+    day: Boolean
   },
   data() {
     return {
       //lines: prayerLines
-    }
-  }, 
+      groupName: "Krist Kiran Parivar"
+    };
+  },
   computed: {
-    newLines: function() { //gets the appropriate prayer as a array; one element for each paragraph
+    newLines: function() {
+      //gets the appropriate prayer as a array; one element for each paragraph
 
-      //const prayerLines = () => import('./info/LDCsat-before.json').then(({default: myData}) => myData);
-      //console.log(prayerLines);
-      if(this.optionId==3) {
-        var isAllowed =(aLine)=> !(aLine.markUp.charAt(2)=='V' && aLine.markUp.substring(4)!=this.season );
-        return satBeforeLines.filter(isAllowed);
+      if(this.day){
+
+        if (this.optionId == 3) {
+          var isAllowed = aLine =>
+            !(
+              aLine.markUp.charAt(2) == "V" &&
+              aLine.markUp.substring(4) != this.season
+            );
+          satBeforeLines.forEach(aLine => {
+            aLine.text = aLine.text.replace("NN", this.groupName);
+          });
+          return satBeforeLines.filter(isAllowed);
+        }
+
+        if (this.optionId == 4) {
+          satAfterLines.forEach(aLine => {
+            aLine.text = aLine.text.replace("NN", this.groupName);
+          });
+          return satAfterLines;
+        }
       }
-      if(this.optionId==4) {
-        return satAfterLines;
+
+      if(!this.day) {
+        if (this.optionId == 3) {
+          return sunBeforeLines;
+        }
+        if (this.optionId == 4) {
+          return sunAfterLines
+        }
       }
-      if(this.optionId==6) {
+
+      if (this.optionId == 6) {
         return protectionLines;
       }
       return satBeforeLines;
     }
   }
-}
+};
 </script>
 
-<style> /* styles for displaying prayers*/
-  .T { /* title */
-    background-color: maroon;
-    font-size: 32px;
-    color:white;
-    padding: 4, 4, 4, 4;
-    text-align: center;
-  }
+<style>
+/* styles for displaying prayers*/
 
-  .H { /* heading */
-    color:maroon;
-    font-size: 24px;
-  }
+p{
+  margin-bottom: 0px !important;
+  padding: 4px 0 4px 0 !important;
+}
+.T {
+  /* title */
+  background-color: maroon;
+  font-size: 32px;
+  color:white;
+  padding: 4px 4px 4px 4px !important;
+  text-align: center;
+}
 
-  .I { /* instruction */
-    color:grey;
-    font-size: 15px;
-  }
+.H {
+  /* heading */
+  color: maroon;
+  font-size: 24px;
+}
 
-  .S { /* subheading */
-    color: maroon;
-    font-size: 22px;
-  }
+.I {
+  /* instruction */
+  color: grey;
+  font-size: 15px;
+}
 
-  .L { /* leader */
-    color: mediumblue;
-    font-size: 20px;
-    padding-bottom: 16px;
-    margin-bottom: 0px!important;
-  }
+.S {
+  /* subheading */
+  color: maroon;
+  font-size: 22px;
+}
 
-  .A { /* assistant */
-    color: olivedrab;
-    font-size: 20px;
-    padding-bottom: 16px;
-    margin-bottom: 0px!important;
-  }
+.L {
+  /* leader */
+  color: mediumblue;
+  font-size: 20px;
+}
 
-  .G { /* group */
-    font-size: 20px;
-    padding-bottom: 16px;
-    margin-bottom: 0px!important;
-  }
-  
-  .O { /* optional */
-    background-color: #ffeeee;
-  }
+.A {
+  /* assistant */
+  color: olivedrab;
+  font-size: 20px;
+}
 
-  .R { /* optionally responsive */
-    font-style: italic;
-  }
+.G {
+  /* group */
+  font-size: 20px;
+}
 
+.O {
+  /* optional */
+  background-color: #ffeeee;
+}
+
+.R {
+  /* optionally responsive */
+  font-style: italic;
+}
 </style>
