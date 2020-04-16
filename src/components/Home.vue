@@ -39,7 +39,7 @@
         class="fill-height"
         fluid
       >
-        <v-row v-if="info!=null && prayerId==0"> <!-- only show in the beginning -->
+        <v-row v-if="info!=null && (prayerId==0||prayerId==undefined)"> <!-- only show in the beginning -->
           <v-col vcols="12">
             <v-row>
               <v-col vcols="12">
@@ -136,7 +136,7 @@
       })
       .finally(() =>{
           if(this.info.celebrations[0].colour=="violet") {
-            this.$vuetify.theme.themes.light.primary = '#5E35B1';
+            this.$vuetify.theme.themes.light.primary = '#4A148C';
             this.colourDark = false;
           }
           else if (this.info.celebrations[0].colour=="red"){
@@ -148,7 +148,7 @@
             this.colourDark = false;
           }
           else if (this.info.celebrations[0].colour=="white"){
-            this.$vuetify.theme.themes.light.primary = '#FDD835';
+            this.$vuetify.theme.themes.light.primary = '#E2AB00';
             this.colourDark = true;
           }
           else {
