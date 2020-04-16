@@ -2,9 +2,8 @@
   <v-app id="inspire">
     <v-navigation-drawer
       v-model="drawer"
-      :dark ="colourDark"
-      app
-    >
+      dark
+      app>
       <v-list dense>
 
         <v-treeview
@@ -27,8 +26,7 @@
     <v-app-bar
       app
       color="primary"
-      :dark ="!colourDark"
-    ><!--for when the liturgical color is white -->
+      dark>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"/>
       <v-toolbar-title>Prayer Guide</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -47,7 +45,7 @@
           </p>
         </div>
         <div v-if="info!=null && prayerId!=0"> <!-- Shows selected prayer -->
-          <PrayerContent :optionId="prayerId" :season="info.season" :day="sat"/>
+          <PrayerContent :key="dialog" :optionId="prayerId" :season="info.season" :day="sat" :group="groupName"/>
         </div>
       </v-container>
     </v-content>
@@ -55,8 +53,30 @@
       v-bind:color="this.$vuetify.theme.themes.light.primary"
       app
     >
-      <span v-if="!colourDark" class="white--text">&copy; 2020</span>
-      <span v-else >&copy; 2020</span>
+      <span class="white--text">&copy; 2020</span>
+      <v-spacer></v-spacer>
+
+      <v-btn v-show="(prayerId==3||prayerId==4)" text small @click.stop="dialog = true" class="white--text">Change group name</v-btn>
+      
+      <v-dialog v-model="dialog" max-width="300">
+        <v-card>
+          <v-card-title class="primary white--text">Enter your group name:</v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field v-model="groupName" class="primary--text" label="Group name" outlined></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-divider></v-divider>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text @click="persist" color="primary">Change</v-btn>
+          </v-card-actions>
+          </v-card>
+      </v-dialog>
     </v-footer>
   </v-app>
 </template>
@@ -73,6 +93,14 @@
       source: String,
     },
     mounted () { 
+
+      
+      if (localStorage.groupName) {
+        this.groupName = localStorage.groupName;  //to get a different community name for other community's users
+      }
+      else
+        this.groupName = 'Krist Kiran Parivar';
+
       //loading liturgical info for the day
       var d = new Date();
       var dateString = d.getFullYear()+'/'+(d.getMonth()+1)+'/'+d.getDate();
@@ -98,7 +126,7 @@
             this.colourDark = false;
           }
           else if (this.info.celebrations[0].colour=="white"){
-            this.$vuetify.theme.themes.light.primary = '#FFFFFF';
+            this.$vuetify.theme.themes.light.primary = '#FDD835';
             this.colourDark = true;
           }
           else {
@@ -116,7 +144,7 @@
             { id: 2, icon:'mdi-glass-wine', name: 'LDC',
               children: [
                           { id:3, icon:'mdi-candle', name:'Before Meal'},
-                          { id:4, icon:'mdi-apple', name:'After Meal'}
+                          { id:4, icon:'mdi-baguette', name:'After Meal'}
                         ]
             },
             { id: 5, icon:'mdi-chess-rook', name: 'Prayer for the year' },
@@ -127,7 +155,8 @@
       info: null,
       prayerId: 0,
       sat: true, //variable that is true unless the day a Sunday. Saturday's prayer is the default prayer any day except for Sunday
-      colourDark: false
+      dialog: false,
+      groupName: ''
     }),
     methods: { 
       getPrayer: function(array) { //gets the prayer id from the treeview
@@ -143,6 +172,10 @@
       }, 
       setSun() {
         this.sat=false;
+      },
+      persist() {
+        this.dialog = false;
+        localStorage.groupName = this.groupName; //to set a differnt community name for other community's users
       }
     }
   }

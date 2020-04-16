@@ -15,37 +15,47 @@ export default {
   props: {
     optionId: Number,
     season: String,
-    day: Boolean
+    day: Boolean,
+    group: String
   },
   data() {
     return {
       //lines: prayerLines
-      groupName: "Krist Kiran Parivar"
+      groupName:'',
+      
     };
+  },
+  created() {
+      if(!this.group=='')
+        this.groupName = this.group;
+      else
+        this.groupName = 'Krist Kiran Parivar';
   },
   computed: {
     newLines: function() {
+      
       //gets the appropriate prayer as a array; one element for each paragraph
-
       if(this.day){
 
         if (this.optionId == 3) {
+          const tempArr=JSON.parse(JSON.stringify(satBeforeLines));
           var isAllowed = aLine =>
             !(
               aLine.markUp.charAt(2) == "V" &&
               aLine.markUp.substring(4) != this.season
             );
-          satBeforeLines.forEach(aLine => {
+          tempArr.forEach(aLine => {
             aLine.text = aLine.text.replace("NN", this.groupName);
           });
-          return satBeforeLines.filter(isAllowed);
+          return tempArr.filter(isAllowed);
         }
 
         if (this.optionId == 4) {
-          satAfterLines.forEach(aLine => {
+          const tempArr=JSON.parse(JSON.stringify(satAfterLines));
+          tempArr.forEach(aLine => {
             aLine.text = aLine.text.replace("NN", this.groupName);
           });
-          return satAfterLines;
+          return tempArr;
         }
       }
 
@@ -61,7 +71,7 @@ export default {
       if (this.optionId == 6) {
         return protectionLines;
       }
-      return satBeforeLines;
+      return null;
     }
   }
 };
