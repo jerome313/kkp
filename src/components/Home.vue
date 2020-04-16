@@ -39,16 +39,38 @@
         class="fill-height"
         fluid
       >
-        <div v-if="info!=null && prayerId==0"><!-- Liturgical celebration. Only displayed in the beginnning -->
-          <p class="display-1 text--primary" v-for="cel in info.celebrations" :key="cel.title">
-            {{cel.title}}
-          </p>
-        </div>
+        <v-row v-if="info!=null && prayerId==0"> <!-- only show in the beginning -->
+          <v-col vcols="12">
+            <v-row>
+              <v-col vcols="12">
+                Today is 
+                <span v-for="cel in info.celebrations" :key="cel.title">
+                  {{cel.title}}
+                </span>
+              </v-col>
+            </v-row>
+            <v-row justify="center">
+              <v-col vcol="12" v-for="card in cardItems" :key="card.id">
+                <v-card raised :id="card.id" @click="getPrayerBy">
+                  <v-card-actions>
+                      <v-btn :id="card.id" color="primary" fab x-large dark>
+                        <v-icon>{{card.icon}}</v-icon>
+                      </v-btn>
+                      <v-card-text>{{card.name}}</v-card-text>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+
         <div v-if="info!=null && prayerId!=0"> <!-- Shows selected prayer -->
           <PrayerContent :key="dialog" :optionId="prayerId" :season="info.season" :day="sat" :group="groupName"/>
         </div>
+
       </v-container>
     </v-content>
+
     <v-footer
       v-bind:color="this.$vuetify.theme.themes.light.primary"
       app
@@ -58,7 +80,7 @@
 
       <v-btn v-show="(prayerId==3||prayerId==4)" text small @click.stop="dialog = true" class="white--text">Change group name</v-btn>
       
-      <v-dialog v-model="dialog" max-width="300">
+      <v-dialog v-model="dialog" max-width="300"> <!-- dialog -->
         <v-card>
           <v-card-title class="primary white--text">Enter your group name:</v-card-title>
           <v-card-text>
@@ -77,6 +99,7 @@
           </v-card-actions>
           </v-card>
       </v-dialog>
+
     </v-footer>
   </v-app>
 </template>
@@ -93,8 +116,7 @@
       source: String,
     },
     mounted () { 
-
-      
+     
       if (localStorage.groupName) {
         this.groupName = localStorage.groupName;  //to get a different community name for other community's users
       }
@@ -158,6 +180,26 @@
       dialog: false,
       groupName: ''
     }),
+    computed: {
+      cardItems: function() {
+        var prefix='';
+        function getLeafNodes(nodes, result=[]) {
+          
+          for(var i=0; i<nodes.length;i++ ){
+            if(nodes[i].children){
+              prefix = prefix + nodes[i].name + ': ';
+              result=getLeafNodes(nodes[i].children, result);
+            }else {
+              nodes[i].name = prefix + nodes[i].name;
+              result.push(nodes[i]);
+            }
+          }
+          prefix=prefix.substring(0, prefix.indexOf(' ')+1);
+          return result;
+        }
+        return getLeafNodes(this.items);
+      }
+    },
     methods: { 
       getPrayer: function(array) { //gets the prayer id from the treeview
         console.log("prayer", array[0]);
@@ -167,6 +209,13 @@
         }
         this.prayerId=array[0];
       },
+      getPrayerBy: function(e) {
+        console.log("prayerz", e);
+        if(this.info!=null) {
+          this.sat = !(this.info.weekday=="sunday")
+        }
+        this.prayerId=parseInt(e.currentTarget.id);
+      },
       setSat() {
         this.sat=true;
       }, 
@@ -175,7 +224,7 @@
       },
       persist() {
         this.dialog = false;
-        localStorage.groupName = this.groupName; //to set a differnt community name for other community's users
+        localStorage.groupName = this.groupName; //to set a different community name for other community's users
       }
     }
   }
