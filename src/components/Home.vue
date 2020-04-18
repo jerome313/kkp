@@ -77,8 +77,9 @@
     >
       <span class="white--text">&copy; 2020</span>
       <v-spacer></v-spacer>
-
-      <v-btn v-show="(prayerId==3||prayerId==4)" text small @click.stop="dialog = true" class="white--text">Change group name</v-btn>
+      
+      <v-btn v-show="(prayerId==3||prayerId==4)" text small @click.stop="dialog2 = true" class="white--text">Guide</v-btn>
+      <v-btn v-show="(prayerId==3||prayerId==4)" text small @click.stop="dialog = true" class="white--text">Change grp. name</v-btn>
       
       <v-dialog v-model="dialog" max-width="300"> <!-- dialog -->
         <v-card>
@@ -100,6 +101,23 @@
           </v-card>
       </v-dialog>
 
+      <v-dialog v-model="dialog2" max-width="300">
+        <v-card>
+          <v-card-title class="primary white--text">Guide:</v-card-title>
+            <v-card-text>
+              <p class="L">Blue text - Leader</p>
+              <p class="A">Green text - Assistant</p>
+              <p class="G">Black text - Group</p>
+              <p class="O">Highlighted text - Optional block</p>
+              <p class="R">Italicised text - Optionally responsive</p>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text @click="dialog2 = false" color="primary">OK</v-btn>
+            </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-footer>
   </v-app>
 </template>
@@ -176,9 +194,10 @@
       ],
       info: null,
       prayerId: 0,
-      sat: true, //variable that is true unless the day a Sunday. Saturday's prayer is the default prayer any day except for Sunday
+      sat: true, //variable that is true unless the day is Sunday. Saturday's prayer is the default prayer any day except for Sunday
       dialog: false,
-      groupName: ''
+      groupName: '',
+      dialog2: false
     }),
     computed: {
       cardItems: function() {
