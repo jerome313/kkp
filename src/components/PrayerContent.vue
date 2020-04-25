@@ -30,7 +30,7 @@ export default {
       if(!this.group=='')
         this.groupName = this.group;
       else
-        this.groupName = 'Krist Kiran Parivar';
+        this.groupName = 'The Sword of the Spirit';
   },
   computed: {
     newLines: function() {

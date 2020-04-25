@@ -45,6 +45,7 @@
               <v-col vcols="12">
                 Today is 
                 <span v-for="cel in info.celebrations" :key="cel.title">
+                  <span v-if="cel.title.substring(0,5)=='Saint'">the feast of </span>
                   {{cel.title}}
                 </span>
               </v-col>
@@ -108,8 +109,6 @@
               <p class="L">Blue text - Leader</p>
               <p class="A">Green text - Assistant</p>
               <p class="G">Black text - Group</p>
-              <p class="O">Highlighted text - Optional block</p>
-              <p class="R">Italicised text - Optionally responsive</p>
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions>
@@ -139,7 +138,7 @@
         this.groupName = localStorage.groupName;  //to get a different community name for other community's users
       }
       else
-        this.groupName = 'Krist Kiran Parivar';
+        this.groupName = 'The Sword of the Spirit';
 
       //loading liturgical info for the day
       var d = new Date();
@@ -169,8 +168,16 @@
             this.$vuetify.theme.themes.light.primary = '#E2AB00';
             this.colourDark = true;
           }
+          else if (this.info.celebrations[0].colour=="green"){
+            this.$vuetify.theme.themes.light.primary = '#1B5E20';
+            this.colourDark = true;
+          }
           else {
             this.$vuetify.theme.themes.light.primary = '#3F51B5';
+          }
+          if(Date.parse(dateString)>=Date.parse("2020/01/18")&&Date.parse(dateString)<=Date.parse("2020/01/25"))
+          {
+            this.info.season='unity';
           }
       });
     },
